@@ -33,9 +33,9 @@ impl Number {
     /// return the integer value.
     ///
     /// ```
-    /// # fn main() -> serde_yaml::Result<()> {
+    /// # fn main() -> serde_yaml_ng::Result<()> {
     /// let big = i64::MAX as u64 + 10;
-    /// let v: serde_yaml::Value = serde_yaml::from_str(r#"
+    /// let v: serde_yaml_ng::Value = serde_yaml_ng::from_str(r#"
     /// a: 64
     /// b: 9223372036854775817
     /// c: 256.0
@@ -67,8 +67,8 @@ impl Number {
     /// return the integer value.
     ///
     /// ```
-    /// # fn main() -> serde_yaml::Result<()> {
-    /// let v: serde_yaml::Value = serde_yaml::from_str(r#"
+    /// # fn main() -> serde_yaml_ng::Result<()> {
+    /// let v: serde_yaml_ng::Value = serde_yaml_ng::from_str(r#"
     /// a: 64
     /// b: -64
     /// c: 256.0
@@ -101,8 +101,8 @@ impl Number {
     /// `is_u64` return false but this is not a guarantee in the future.
     ///
     /// ```
-    /// # fn main() -> serde_yaml::Result<()> {
-    /// let v: serde_yaml::Value = serde_yaml::from_str(r#"
+    /// # fn main() -> serde_yaml_ng::Result<()> {
+    /// let v: serde_yaml_ng::Value = serde_yaml_ng::from_str(r#"
     /// a: 256.0
     /// b: 64
     /// c: -64
@@ -128,9 +128,9 @@ impl Number {
     /// None otherwise.
     ///
     /// ```
-    /// # fn main() -> serde_yaml::Result<()> {
+    /// # fn main() -> serde_yaml_ng::Result<()> {
     /// let big = i64::MAX as u64 + 10;
-    /// let v: serde_yaml::Value = serde_yaml::from_str(r#"
+    /// let v: serde_yaml_ng::Value = serde_yaml_ng::from_str(r#"
     /// a: 64
     /// b: 9223372036854775817
     /// c: 256.0
@@ -161,8 +161,8 @@ impl Number {
     /// None otherwise.
     ///
     /// ```
-    /// # fn main() -> serde_yaml::Result<()> {
-    /// let v: serde_yaml::Value = serde_yaml::from_str(r#"
+    /// # fn main() -> serde_yaml_ng::Result<()> {
+    /// let v: serde_yaml_ng::Value = serde_yaml_ng::from_str(r#"
     /// a: 64
     /// b: -64
     /// c: 256.0
@@ -185,8 +185,8 @@ impl Number {
     /// Represents the number as f64 if possible. Returns None otherwise.
     ///
     /// ```
-    /// # fn main() -> serde_yaml::Result<()> {
-    /// let v: serde_yaml::Value = serde_yaml::from_str(r#"
+    /// # fn main() -> serde_yaml_ng::Result<()> {
+    /// let v: serde_yaml_ng::Value = serde_yaml_ng::from_str(r#"
     /// a: 256.0
     /// b: 64
     /// c: -64
@@ -200,14 +200,14 @@ impl Number {
     /// ```
     ///
     /// ```
-    /// # fn main() -> serde_yaml::Result<()> {
-    /// let v: serde_yaml::Value = serde_yaml::from_str(".inf")?;
+    /// # fn main() -> serde_yaml_ng::Result<()> {
+    /// let v: serde_yaml_ng::Value = serde_yaml_ng::from_str(".inf")?;
     /// assert_eq!(v.as_f64(), Some(f64::INFINITY));
     ///
-    /// let v: serde_yaml::Value = serde_yaml::from_str("-.inf")?;
+    /// let v: serde_yaml_ng::Value = serde_yaml_ng::from_str("-.inf")?;
     /// assert_eq!(v.as_f64(), Some(f64::NEG_INFINITY));
     ///
-    /// let v: serde_yaml::Value = serde_yaml::from_str(".nan")?;
+    /// let v: serde_yaml_ng::Value = serde_yaml_ng::from_str(".nan")?;
     /// assert!(v.as_f64().unwrap().is_nan());
     /// # Ok(())
     /// # }
@@ -224,7 +224,7 @@ impl Number {
     /// Returns true if this value is NaN and false otherwise.
     ///
     /// ```
-    /// # use serde_yaml::Number;
+    /// # use serde_yaml_ng::Number;
     /// #
     /// assert!(!Number::from(256.0).is_nan());
     ///
@@ -248,7 +248,7 @@ impl Number {
     /// false otherwise.
     ///
     /// ```
-    /// # use serde_yaml::Number;
+    /// # use serde_yaml_ng::Number;
     /// #
     /// assert!(!Number::from(256.0).is_infinite());
     ///
@@ -271,7 +271,7 @@ impl Number {
     /// Returns true if this number is neither infinite nor NaN.
     ///
     /// ```
-    /// # use serde_yaml::Number;
+    /// # use serde_yaml_ng::Number;
     /// #
     /// assert!(Number::from(256.0).is_finite());
     ///

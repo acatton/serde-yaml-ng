@@ -33,22 +33,22 @@ impl Serialize for Value {
 
 /// Serializer whose output is a `Value`.
 ///
-/// This is the serializer that backs [`serde_yaml::to_value`][crate::to_value].
-/// Unlike the main serde_yaml serializer which goes from some serializable
+/// This is the serializer that backs [`serde_yaml_ng::to_value`][crate::to_value].
+/// Unlike the main serde_yaml_ng serializer which goes from some serializable
 /// value of type `T` to YAML text, this one goes from `T` to
-/// `serde_yaml::Value`.
+/// `serde_yaml_ng::Value`.
 ///
 /// The `to_value` function is implementable as:
 ///
 /// ```
 /// use serde::Serialize;
-/// use serde_yaml::{Error, Value};
+/// use serde_yaml_ng::{Error, Value};
 ///
 /// pub fn to_value<T>(input: T) -> Result<Value, Error>
 /// where
 ///     T: Serialize,
 /// {
-///     input.serialize(serde_yaml::value::Serializer)
+///     input.serialize(serde_yaml_ng::value::Serializer)
 /// }
 /// ```
 pub struct Serializer;

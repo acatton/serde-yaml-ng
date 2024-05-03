@@ -26,11 +26,11 @@ type Result<T, E = Error> = std::result::Result<T, E>;
 /// ```
 /// use anyhow::Result;
 /// use serde::Deserialize;
-/// use serde_yaml::Value;
+/// use serde_yaml_ng::Value;
 ///
 /// fn main() -> Result<()> {
 ///     let input = "k: 107\n";
-///     let de = serde_yaml::Deserializer::from_str(input);
+///     let de = serde_yaml_ng::Deserializer::from_str(input);
 ///     let value = Value::deserialize(de)?;
 ///     println!("{:?}", value);
 ///     Ok(())
@@ -42,12 +42,12 @@ type Result<T, E = Error> = std::result::Result<T, E>;
 /// ```
 /// use anyhow::Result;
 /// use serde::Deserialize;
-/// use serde_yaml::Value;
+/// use serde_yaml_ng::Value;
 ///
 /// fn main() -> Result<()> {
 ///     let input = "---\nk: 107\n...\n---\nj: 106\n";
 ///
-///     for document in serde_yaml::Deserializer::from_str(input) {
+///     for document in serde_yaml_ng::Deserializer::from_str(input) {
 ///         let value = Value::deserialize(document)?;
 ///         println!("{:?}", value);
 ///     }

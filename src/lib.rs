@@ -17,18 +17,18 @@
 //! ```
 //! use std::collections::BTreeMap;
 //!
-//! fn main() -> Result<(), serde_yaml::Error> {
+//! fn main() -> Result<(), serde_yaml_ng::Error> {
 //!     // You have some type.
 //!     let mut map = BTreeMap::new();
 //!     map.insert("x".to_string(), 1.0);
 //!     map.insert("y".to_string(), 2.0);
 //!
 //!     // Serialize it to a YAML string.
-//!     let yaml = serde_yaml::to_string(&map)?;
+//!     let yaml = serde_yaml_ng::to_string(&map)?;
 //!     assert_eq!(yaml, "x: 1.0\ny: 2.0\n");
 //!
 //!     // Deserialize it back to a Rust type.
-//!     let deserialized_map: BTreeMap<String, f64> = serde_yaml::from_str(&yaml)?;
+//!     let deserialized_map: BTreeMap<String, f64> = serde_yaml_ng::from_str(&yaml)?;
 //!     assert_eq!(map, deserialized_map);
 //!     Ok(())
 //! }
@@ -51,13 +51,13 @@
 //!     y: f64,
 //! }
 //!
-//! fn main() -> Result<(), serde_yaml::Error> {
+//! fn main() -> Result<(), serde_yaml_ng::Error> {
 //!     let point = Point { x: 1.0, y: 2.0 };
 //!
-//!     let yaml = serde_yaml::to_string(&point)?;
+//!     let yaml = serde_yaml_ng::to_string(&point)?;
 //!     assert_eq!(yaml, "x: 1.0\ny: 2.0\n");
 //!
-//!     let deserialized_point: Point = serde_yaml::from_str(&yaml)?;
+//!     let deserialized_point: Point = serde_yaml_ng::from_str(&yaml)?;
 //!     assert_eq!(point, deserialized_point);
 //!     Ok(())
 //! }
@@ -77,13 +77,13 @@
 //!     Struct { x: f64, y: f64 },
 //! }
 //!
-//! fn main() -> Result<(), serde_yaml::Error> {
+//! fn main() -> Result<(), serde_yaml_ng::Error> {
 //!     let yaml = "
 //!         - !Newtype 1
 //!         - !Tuple [0, 0, 0]
 //!         - !Struct {x: 1.0, y: 2.0}
 //!     ";
-//!     let values: Vec<Enum> = serde_yaml::from_str(yaml).unwrap();
+//!     let values: Vec<Enum> = serde_yaml_ng::from_str(yaml).unwrap();
 //!     assert_eq!(values[0], Enum::Newtype(1));
 //!     assert_eq!(values[1], Enum::Tuple(0, 0, 0));
 //!     assert_eq!(values[2], Enum::Struct { x: 1.0, y: 2.0 });
@@ -98,7 +98,7 @@
 //!           x: 1.0
 //!           y: 2.0
 //!     ";
-//!     let values: Vec<Enum> = serde_yaml::from_str(yaml).unwrap();
+//!     let values: Vec<Enum> = serde_yaml_ng::from_str(yaml).unwrap();
 //!     assert_eq!(values[0], Enum::Tuple(0, 0, 0));
 //!     assert_eq!(values[1], Enum::Struct { x: 1.0, y: 2.0 });
 //!
@@ -107,7 +107,7 @@
 //!         - Unit  # serialization produces this one
 //!         - !Unit
 //!     ";
-//!     let values: Vec<Enum> = serde_yaml::from_str(yaml).unwrap();
+//!     let values: Vec<Enum> = serde_yaml_ng::from_str(yaml).unwrap();
 //!     assert_eq!(values[0], Enum::Unit);
 //!     assert_eq!(values[1], Enum::Unit);
 //!

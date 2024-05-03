@@ -19,13 +19,13 @@
 ///
 /// #[derive(Serialize, Deserialize, PartialEq, Debug)]
 /// struct Struct {
-///     #[serde(with = "serde_yaml::with::singleton_map")]
+///     #[serde(with = "serde_yaml_ng::with::singleton_map")]
 ///     w: Enum,
-///     #[serde(with = "serde_yaml::with::singleton_map")]
+///     #[serde(with = "serde_yaml_ng::with::singleton_map")]
 ///     x: Enum,
-///     #[serde(with = "serde_yaml::with::singleton_map")]
+///     #[serde(with = "serde_yaml_ng::with::singleton_map")]
 ///     y: Enum,
-///     #[serde(with = "serde_yaml::with::singleton_map")]
+///     #[serde(with = "serde_yaml_ng::with::singleton_map")]
 ///     z: Enum,
 /// }
 ///
@@ -37,10 +37,10 @@
 ///         z: Enum::Struct { value: 1 },
 ///     };
 ///
-///     let yaml = serde_yaml::to_string(&object).unwrap();
+///     let yaml = serde_yaml_ng::to_string(&object).unwrap();
 ///     print!("{}", yaml);
 ///
-///     let deserialized: Struct = serde_yaml::from_str(&yaml).unwrap();
+///     let deserialized: Struct = serde_yaml_ng::from_str(&yaml).unwrap();
 ///     assert_eq!(object, deserialized);
 /// }
 /// ```
@@ -858,7 +858,7 @@ pub mod singleton_map {
 /// struct Outer {
 ///     tagged_style: Inner,
 ///
-///     #[serde(with = "serde_yaml::with::singleton_map_recursive")]
+///     #[serde(with = "serde_yaml_ng::with::singleton_map_recursive")]
 ///     singleton_map_style: Inner,
 /// }
 ///
@@ -874,10 +874,10 @@ pub mod singleton_map {
 ///         },
 ///     };
 ///
-///     let yaml = serde_yaml::to_string(&object).unwrap();
+///     let yaml = serde_yaml_ng::to_string(&object).unwrap();
 ///     print!("{}", yaml);
 ///
-///     let deserialized: Outer = serde_yaml::from_str(&yaml).unwrap();
+///     let deserialized: Outer = serde_yaml_ng::from_str(&yaml).unwrap();
 ///     assert_eq!(object, deserialized);
 /// }
 /// ```
@@ -923,12 +923,12 @@ pub mod singleton_map {
 ///     };
 ///
 ///     let mut buf = Vec::new();
-///     let mut serializer = serde_yaml::Serializer::new(&mut buf);
-///     serde_yaml::with::singleton_map_recursive::serialize(&object, &mut serializer).unwrap();
+///     let mut serializer = serde_yaml_ng::Serializer::new(&mut buf);
+///     serde_yaml_ng::with::singleton_map_recursive::serialize(&object, &mut serializer).unwrap();
 ///     io::stdout().write_all(&buf).unwrap();
 ///
-///     let deserializer = serde_yaml::Deserializer::from_slice(&buf);
-///     let deserialized: Inner = serde_yaml::with::singleton_map_recursive::deserialize(deserializer).unwrap();
+///     let deserializer = serde_yaml_ng::Deserializer::from_slice(&buf);
+///     let deserialized: Inner = serde_yaml_ng::with::singleton_map_recursive::deserialize(deserializer).unwrap();
 ///     assert_eq!(object, deserialized);
 /// }
 /// ```

@@ -3,11 +3,11 @@ use crate::{mapping, private, Mapping, Value};
 use std::fmt::{self, Debug};
 use std::ops;
 
-/// A type that can be used to index into a `serde_yaml::Value`. See the `get`
+/// A type that can be used to index into a `serde_yaml_ng::Value`. See the `get`
 /// and `get_mut` methods of `Value`.
 ///
 /// This trait is sealed and cannot be implemented for types outside of
-/// `serde_yaml`.
+/// `serde_yaml_ng`.
 pub trait Index: private::Sealed {
     /// Return None if the key is not already in the sequence or object.
     #[doc(hidden)]
@@ -202,7 +202,7 @@ where
 {
     type Output = Value;
 
-    /// Index into a `serde_yaml::Value` using the syntax `value[0]` or
+    /// Index into a `serde_yaml_ng::Value` using the syntax `value[0]` or
     /// `value["k"]`.
     ///
     /// Returns `Value::Null` if the type of `self` does not match the type of
@@ -216,16 +216,16 @@ where
     /// # Examples
     ///
     /// ```
-    /// # use serde_yaml::Value;
+    /// # use serde_yaml_ng::Value;
     /// #
-    /// # fn main() -> serde_yaml::Result<()> {
-    /// let data: serde_yaml::Value = serde_yaml::from_str(r#"{ x: { y: [z, zz] } }"#)?;
+    /// # fn main() -> serde_yaml_ng::Result<()> {
+    /// let data: serde_yaml_ng::Value = serde_yaml_ng::from_str(r#"{ x: { y: [z, zz] } }"#)?;
     ///
-    /// assert_eq!(data["x"]["y"], serde_yaml::from_str::<Value>(r#"["z", "zz"]"#).unwrap());
-    /// assert_eq!(data["x"]["y"][0], serde_yaml::from_str::<Value>(r#""z""#).unwrap());
+    /// assert_eq!(data["x"]["y"], serde_yaml_ng::from_str::<Value>(r#"["z", "zz"]"#).unwrap());
+    /// assert_eq!(data["x"]["y"][0], serde_yaml_ng::from_str::<Value>(r#""z""#).unwrap());
     ///
-    /// assert_eq!(data["a"], serde_yaml::from_str::<Value>(r#"null"#).unwrap()); // returns null for undefined values
-    /// assert_eq!(data["a"]["b"], serde_yaml::from_str::<Value>(r#"null"#).unwrap()); // does not panic
+    /// assert_eq!(data["a"], serde_yaml_ng::from_str::<Value>(r#"null"#).unwrap()); // returns null for undefined values
+    /// assert_eq!(data["a"]["b"], serde_yaml_ng::from_str::<Value>(r#"null"#).unwrap()); // does not panic
     /// # Ok(())
     /// # }
     /// ```
@@ -239,7 +239,7 @@ impl<I> ops::IndexMut<I> for Value
 where
     I: Index,
 {
-    /// Write into a `serde_yaml::Value` using the syntax `value[0] = ...` or
+    /// Write into a `serde_yaml_ng::Value` using the syntax `value[0] = ...` or
     /// `value["k"] = ...`.
     ///
     /// If the index is a number, the value must be a sequence of length bigger
@@ -254,20 +254,20 @@ where
     /// # Examples
     ///
     /// ```
-    /// # fn main() -> serde_yaml::Result<()> {
-    /// let mut data: serde_yaml::Value = serde_yaml::from_str(r#"{x: 0}"#)?;
+    /// # fn main() -> serde_yaml_ng::Result<()> {
+    /// let mut data: serde_yaml_ng::Value = serde_yaml_ng::from_str(r#"{x: 0}"#)?;
     ///
     /// // replace an existing key
-    /// data["x"] = serde_yaml::from_str(r#"1"#)?;
+    /// data["x"] = serde_yaml_ng::from_str(r#"1"#)?;
     ///
     /// // insert a new key
-    /// data["y"] = serde_yaml::from_str(r#"[false, false, false]"#)?;
+    /// data["y"] = serde_yaml_ng::from_str(r#"[false, false, false]"#)?;
     ///
     /// // replace a value in a sequence
-    /// data["y"][0] = serde_yaml::from_str(r#"true"#)?;
+    /// data["y"][0] = serde_yaml_ng::from_str(r#"true"#)?;
     ///
     /// // inserted a deeply nested key
-    /// data["a"]["b"]["c"]["d"] = serde_yaml::from_str(r#"true"#)?;
+    /// data["a"]["b"]["c"]["d"] = serde_yaml_ng::from_str(r#"true"#)?;
     ///
     /// println!("{:?}", data);
     /// # Ok(())

@@ -8,15 +8,15 @@ use indoc::indoc;
 use serde::de::IntoDeserializer;
 use serde::Deserialize;
 use serde_derive::{Deserialize, Serialize};
-use serde_yaml::{Number, Value};
+use serde_yaml_ng::{Number, Value};
 
 #[test]
 fn test_nan() {
-    let pos_nan = serde_yaml::from_str::<Value>(".nan").unwrap();
+    let pos_nan = serde_yaml_ng::from_str::<Value>(".nan").unwrap();
     assert!(pos_nan.is_f64());
     assert_eq!(pos_nan, pos_nan);
 
-    let neg_fake_nan = serde_yaml::from_str::<Value>("-.nan").unwrap();
+    let neg_fake_nan = serde_yaml_ng::from_str::<Value>("-.nan").unwrap();
     assert!(neg_fake_nan.is_string());
 
     let significand_mask = 0xF_FFFF_FFFF_FFFF;
@@ -27,7 +27,7 @@ fn test_nan() {
 
 #[test]
 fn test_digits() {
-    let num_string = serde_yaml::from_str::<Value>("01").unwrap();
+    let num_string = serde_yaml_ng::from_str::<Value>("01").unwrap();
     assert!(num_string.is_string());
 }
 
@@ -39,15 +39,15 @@ fn test_into_deserializer() {
         second: u32,
     }
 
-    let value = serde_yaml::from_str::<Value>("xyz").unwrap();
+    let value = serde_yaml_ng::from_str::<Value>("xyz").unwrap();
     let s = String::deserialize(value.into_deserializer()).unwrap();
     assert_eq!(s, "xyz");
 
-    let value = serde_yaml::from_str::<Value>("- first\n- second\n- third").unwrap();
+    let value = serde_yaml_ng::from_str::<Value>("- first\n- second\n- third").unwrap();
     let arr = Vec::<String>::deserialize(value.into_deserializer()).unwrap();
     assert_eq!(arr, &["first", "second", "third"]);
 
-    let value = serde_yaml::from_str::<Value>("first: abc\nsecond: 99").unwrap();
+    let value = serde_yaml_ng::from_str::<Value>("first: abc\nsecond: 99").unwrap();
     let test = Test::deserialize(value.into_deserializer()).unwrap();
     assert_eq!(
         test,
@@ -91,7 +91,7 @@ fn test_merge() {
           label: center/big
     "};
 
-    let mut value: Value = serde_yaml::from_str(yaml).unwrap();
+    let mut value: Value = serde_yaml_ng::from_str(yaml).unwrap();
     value.apply_merge().unwrap();
     for i in 5..=7 {
         assert_eq!(value[4], value[i]);
@@ -112,7 +112,7 @@ fn test_debug() {
         Tagged: !tag true
     "};
 
-    let value: Value = serde_yaml::from_str(yaml).unwrap();
+    let value: Value = serde_yaml_ng::from_str(yaml).unwrap();
     let debug = format!("{:#?}", value);
 
     let expected = indoc! {r#"
@@ -143,11 +143,11 @@ fn test_tagged() {
         Variant(usize),
     }
 
-    let value = serde_yaml::to_value(&Enum::Variant(0)).unwrap();
+    let value = serde_yaml_ng::to_value(&Enum::Variant(0)).unwrap();
 
-    let deserialized: serde_yaml::Value = serde_yaml::from_value(value.clone()).unwrap();
+    let deserialized: serde_yaml_ng::Value = serde_yaml_ng::from_value(value.clone()).unwrap();
     assert_eq!(value, deserialized);
 
-    let serialized = serde_yaml::to_value(&value).unwrap();
+    let serialized = serde_yaml_ng::to_value(&value).unwrap();
     assert_eq!(value, serialized);
 }
