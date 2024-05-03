@@ -730,25 +730,25 @@ fn test_enum_untagged() {
     // A
     {
         let expected = UntaggedEnum::A { r#match: true };
-        let deserialized: UntaggedEnum = serde_yaml::from_str("match: True").unwrap();
+        let deserialized: UntaggedEnum = serde_yaml_ng::from_str("match: True").unwrap();
         assert_eq!(expected, deserialized);
     }
     // AB
     {
         let expected = UntaggedEnum::AB { r#match: "T".to_owned() };
-        let deserialized: UntaggedEnum = serde_yaml::from_str("match: T").unwrap();
+        let deserialized: UntaggedEnum = serde_yaml_ng::from_str("match: T").unwrap();
         assert_eq!(expected, deserialized);
     }
     // B
     {
         let expected = UntaggedEnum::B { r#match: true };
-        let deserialized: UntaggedEnum = serde_yaml::from_str("if: True").unwrap();
+        let deserialized: UntaggedEnum = serde_yaml_ng::from_str("if: True").unwrap();
         assert_eq!(expected, deserialized);
     }
     // C
     {
         let expected = UntaggedEnum::C("match".to_owned());
-        let deserialized: UntaggedEnum = serde_yaml::from_str("match").unwrap();
+        let deserialized: UntaggedEnum = serde_yaml_ng::from_str("match").unwrap();
         assert_eq!(expected, deserialized);
     }
 }
