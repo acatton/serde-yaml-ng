@@ -7,7 +7,25 @@ Serde YAML
 [<img alt="build status" src="https://img.shields.io/github/actions/workflow/status/dtolnay/serde-yaml/ci.yml?branch=master&style=for-the-badge" height="20">](https://github.com/dtolnay/serde-yaml/actions?query=branch%3Amaster)
 
 Rust library for using the [Serde] serialization framework with data in [YAML]
-file format. _(This project is no longer maintained.)_
+file format.
+
+This library is a fork from the latest commit of [serde-yaml](https://github.com/dtolnay/serde-yaml),
+which was `200950`.
+<sup>\[[original](https://github.com/dtolnay/serde-yaml/commit/2009506d33767dfc88e979d6bc0d53d09f941c94)\]</sup>
+<sup>\[[this project](https://github.com/acatton/serde-yaml-ng/commit/2009506d33767dfc88e979d6bc0d53d09f941c94)\]</sup>
+My goal is to be compatible as much as possible with [David Tolnay](https://github.com/dtolnay)'s original library.
+
+I haven't found any good fork as of the start of this project. The best candidate was
+[serde\_yml](https://github.com/sebastienrousseau/serde_yml) which is based on
+[a giant "Initial commit" from the main maintainer](https://github.com/sebastienrousseau/serde_yml/commit/4312d4a56225b223410b5133af571fd13e62f18a).
+This is the type of practices which leads to [security disasters](https://en.wikipedia.org/wiki/XZ_Utils_backdoor).
+
+I don't want to fight with people, I'm maintaining this library for myself, and
+for the rust ecosystem as a whole. So as we say in French: "*You are never
+better served than by yourself*".
+
+Use it, don't use it, I don't care. I'll try to fix bugs as many bugs I can.
+I'll accept pull request if they're reasonable or easy to work with.
 
 [Serde]: https://github.com/serde-rs/serde
 [YAML]: https://yaml.org/
