@@ -154,6 +154,15 @@ fn main() -> Result<(), serde_yaml_ng::Error> {
 
 <br>
 
+## Financial Support
+
+I'm a guy working out of his garage at night with a day job during the day. I
+do not need your money. **Please! Instead, give money to
+[David Tolnay](https://github.com/dtolnay).** This guy
+[carries half of the Rust ecosystem on his shoulders](https://crates.io/users/dtolnay),
+and wrote most of the code for this project before I forked it. I'm just a
+loser who jumped on the train, don't give me any money.
+
 #### License
 
 <sup>
