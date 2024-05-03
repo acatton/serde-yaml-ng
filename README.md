@@ -163,17 +163,10 @@ do not need your money. **Please! Instead, give money to
 and wrote most of the code for this project before I forked it. I'm just a
 loser who jumped on the train, don't give me any money.
 
-#### License
+## License
 
-<sup>
-Licensed under either of <a href="LICENSE-APACHE">Apache License, Version
-2.0</a> or <a href="LICENSE-MIT">MIT license</a> at your option.
-</sup>
+Licensed <a href="LICENSE-MIT">MIT license</a> at your option.
 
-<br>
-
-<sub>
-Unless you explicitly state otherwise, any contribution intentionally submitted
-for inclusion in this crate by you, as defined in the Apache-2.0 license, shall
-be dual licensed as above, without any additional terms or conditions.
-</sub>
+Any contribution must be accompanied with a signature of the
+[Developer Certificate of Origin](https://developercertificate.org/),
+by using the `--signoff` flag on `git commit`.
