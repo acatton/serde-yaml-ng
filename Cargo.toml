@@ -7,7 +7,7 @@ description = "YAML data format for Serde"
 documentation = "https://docs.rs/serde_yaml_ng/"
 edition = "2021"
 keywords = ["yaml", "serde", "serialization"]
-license = "MIT OR Apache-2.0"
+license = "MIT"
 repository = "https://github.com/acatton/serde-yaml-ng"
 rust-version = "1.64"
 
