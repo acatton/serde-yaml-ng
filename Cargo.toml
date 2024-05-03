@@ -1,6 +1,6 @@
 [package]
 name = "serde_yaml_ng"
-version = "0.9.35"
+version = "0.9.36"
 authors = ["Antoine Catton <devel@antoine.catton.fr>"]
 categories = ["encoding", "parser-implementations"]
 description = "YAML data format for Serde"
