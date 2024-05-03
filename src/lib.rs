@@ -1,4 +1,4 @@
-//! [![github]](https://github.com/dtolnay/serde-yaml)&ensp;[![crates-io]](https://crates.io/crates/serde-yaml)&ensp;[![docs-rs]](https://docs.rs/serde-yaml)
+//! [![github]](https://github.com/acatton/serde-yaml-ng)&ensp;[![crates-io]](https://crates.io/crates/serde-yaml-ng)&ensp;[![docs-rs]](https://docs.rs/serde-yaml-ng)
 //!
 //! [github]: https://img.shields.io/badge/github-8da0cb?style=for-the-badge&labelColor=555555&logo=github
 //! [crates-io]: https://img.shields.io/badge/crates.io-fc8d62?style=for-the-badge&labelColor=555555&logo=rust

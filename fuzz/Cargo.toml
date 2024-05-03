@@ -1,7 +1,7 @@
 [package]
 name = "serde_yaml_ng-fuzz"
 version = "0.0.0"
-authors = ["David Tolnay <dtolnay@gmail.com>"]
+authors = ["Antoine Catton <devel@antoine.catton.fr>"]
 edition = "2021"
 publish = false
 
