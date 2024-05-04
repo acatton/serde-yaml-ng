@@ -140,8 +140,6 @@ fn main() -> Result<(), serde_yaml_ng::Error> {
 }
 ```
 
-<br>
-
 ## Why?
 
 I haven't found any good fork as of the start of this project. The best candidate was
