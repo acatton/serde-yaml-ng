@@ -15,18 +15,6 @@ which was `200950`.
 <sup>\[[this project](https://github.com/acatton/serde-yaml-ng/commit/2009506d33767dfc88e979d6bc0d53d09f941c94)\]</sup>
 My goal is to be compatible as much as possible with [David Tolnay](https://github.com/dtolnay)'s original library.
 
-I haven't found any good fork as of the start of this project. The best candidate was
-[serde\_yml](https://github.com/sebastienrousseau/serde_yml) which is based on
-[a giant "Initial commit" from the main maintainer](https://github.com/sebastienrousseau/serde_yml/commit/4312d4a56225b223410b5133af571fd13e62f18a).
-This is the type of practices which leads to [security disasters](https://en.wikipedia.org/wiki/XZ_Utils_backdoor).
-
-I don't want to fight with people, I'm maintaining this library for myself, and
-for the rust ecosystem as a whole. So as we say in French: "*You are never
-better served than by yourself*".
-
-Use it, don't use it, I don't care. I'll try to fix bugs as many bugs I can.
-I'll accept pull request if they're reasonable or easy to work with.
-
 [Serde]: https://github.com/serde-rs/serde
 [YAML]: https://yaml.org/
 
@@ -154,9 +142,23 @@ fn main() -> Result<(), serde_yaml_ng::Error> {
 
 <br>
 
+## Why?
+
+I haven't found any good fork as of the start of this project. The best candidate was
+[serde\_yml](https://github.com/sebastienrousseau/serde_yml) which is based on
+[a giant "Initial commit" from the main maintainer](https://github.com/sebastienrousseau/serde_yml/commit/4312d4a56225b223410b5133af571fd13e62f18a).
+This is the type of practices which leads to [security disasters](https://en.wikipedia.org/wiki/XZ_Utils_backdoor).
+
+I don't want to fight with people about their practices, that's why I'm
+maintaining this library for myself, and for the rust ecosystem as a whole.
+As we say in French: "*You are never better served than by yourself*". 😉
+
+Use it, don't use it, I don't care. I'll try to fix as many bugs as I can.
+I'll accept pull requests if they're reasonable or easy to work with.
+
 ## Financial Support
 
-I'm a guy working out of his garage at night with a day job during the day. I
+I'm a guy working out of his garage at night with a well-paid job during the day. I
 do not need your money. **Please! Instead, give money to
 [David Tolnay](https://github.com/dtolnay).** This guy
 [carries half of the Rust ecosystem on his shoulders](https://crates.io/users/dtolnay),
@@ -165,7 +167,7 @@ loser who jumped on the train, don't give me any money.
 
 ## License
 
-Licensed <a href="LICENSE-MIT">MIT license</a> at your option.
+Licensed <a href="LICENSE-MIT">MIT license</a>.
 
 Any contribution must be accompanied with a signature of the
 [Developer Certificate of Origin](https://developercertificate.org/),
