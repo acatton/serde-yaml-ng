@@ -7,7 +7,7 @@ Serde YAML
 [<img alt="build status" src="https://img.shields.io/github/actions/workflow/status/acatton/serde-yaml-ng/ci.yml?branch=master&style=for-the-badge" height="20">](https://github.com/acatton/serde-yaml-ng/actions?query=branch%3Amaster)
 
 Rust library for using the [Serde] serialization framework with data in [YAML]
-file format.
+file format. This library only follows the [YAML specification 1.1.](https://yaml.org/spec/1.1/).
 
 This library is a fork from the latest commit of [serde-yaml](https://github.com/dtolnay/serde-yaml),
 which was `200950`.
