@@ -29,14 +29,14 @@ impl Index for usize {
     fn index_into<'v>(&self, v: &'v Value) -> Option<&'v Value> {
         match v.untag_ref() {
             Value::Sequence(vec) => vec.get(*self),
-            Value::Mapping(vec) => vec.get(&Value::Number((*self).into())),
+            Value::Mapping(vec) => vec.get(Value::Number((*self).into())),
             _ => None,
         }
     }
     fn index_into_mut<'v>(&self, v: &'v mut Value) -> Option<&'v mut Value> {
         match v.untag_mut() {
             Value::Sequence(vec) => vec.get_mut(*self),
-            Value::Mapping(vec) => vec.get_mut(&Value::Number((*self).into())),
+            Value::Mapping(vec) => vec.get_mut(Value::Number((*self).into())),
             _ => None,
         }
     }
