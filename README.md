@@ -23,7 +23,7 @@ My goal is to be compatible as much as possible with [David Tolnay](https://gith
 ```toml
 [dependencies]
 serde = "1.0"
-serde_yaml_ng = "0.9"
+serde_yaml_ng = "0.10"
 ```
 
 Release notes are available under [GitHub releases].
