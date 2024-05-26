@@ -146,7 +146,7 @@ pub mod singleton_map {
     ///     }
     /// }
     /// # fn main() {}
-    /// ```       
+    /// ```
     pub struct SingletonMap<D> {
         delegate: D,
     }
