@@ -63,7 +63,7 @@ defined in your program.
 ```toml
 [dependencies]
 serde = { version = "1.0", features = ["derive"] }
-serde_yaml_ng = "0.9"
+serde_yaml_ng = "0.10"
 ```
 
 Structs serialize in the obvious way:
