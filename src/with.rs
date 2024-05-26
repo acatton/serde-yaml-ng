@@ -101,6 +101,12 @@ pub mod singleton_map {
         T::deserialize(SingletonMap::new(deserializer))
     }
 
+    /// <div class="warning">This is an new API which is not present in the original <a
+    /// href="https://github.com/dtolnay/serde-yaml"><code>serde-yaml</code></a>. <strong>This API
+    /// is not garanteed to be present in <code>serde-yaml-ng</code> version 1.0.</strong> However,
+    /// this API won't be removed without an acceptable alternative solution for the problem it is
+    /// trying to solve.</div>
+    ///
     /// Can be used for serialing/deserializing an enum using a YAML map containing one entry in
     /// which the key identifies the variant name.
     ///
