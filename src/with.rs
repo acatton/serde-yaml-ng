@@ -89,9 +89,7 @@ pub mod singleton_map {
         T: Serialize,
         S: Serializer,
     {
-        value.serialize(SingletonMap {
-            delegate: serializer,
-        })
+        value.serialize(SingletonMap::new(serializer))
     }
 
     #[allow(missing_docs)]
@@ -100,13 +98,70 @@ pub mod singleton_map {
         T: Deserialize<'de>,
         D: Deserializer<'de>,
     {
-        T::deserialize(SingletonMap {
-            delegate: deserializer,
-        })
+        T::deserialize(SingletonMap::new(deserializer))
     }
 
-    struct SingletonMap<D> {
+    /// <div class="warning">This is an new API which is not present in the original <a
+    /// href="https://github.com/dtolnay/serde-yaml"><code>serde-yaml</code></a>. <strong>This API
+    /// is not garanteed to be present in <code>serde-yaml-ng</code> version 1.0.</strong> However,
+    /// this API won't be removed without an acceptable alternative solution for the problem it is
+    /// trying to solve.</div>
+    ///
+    /// Can be used for serialing/deserializing an enum using a YAML map containing one entry in
+    /// which the key identifies the variant name.
+    ///
+    /// Unlike [`#[serde(with = "singleton_map")`](crate::with::singleton_map) this struct can be
+    /// used from within a custom `Serialize` implementation or from within another `with` module.
+    ///
+    /// # Example
+    /// ```
+    /// use std::sync::Mutex;
+    /// use serde_derive::{Deserialize, Serialize};
+    /// use serde::{Deserialize, Serialize};
+    /// use serde_yaml_ng::with::singleton_map::SingletonMap;
+    ///
+    /// #[derive(Serialize, Deserialize)]
+    /// pub enum Bar {
+    ///     A(u32),
+    ///     B(f32)
+    /// }
+    /// #[derive(Serialize, Deserialize)]
+    /// pub struct Foo {
+    ///     #[serde(with = "bar_serializer")]
+    ///     // Because it has a Mutex, we can't simply derive Serialize/Deserialize here, nor can
+    ///     // we use `#[serde(with = "serde_yaml_ng::with::singleton_map")]`.  We need a custom
+    ///     // `with` module to deal with the Mutex.
+    ///     bar: Mutex<Bar>
+    /// }
+    ///
+    /// mod bar_serializer {
+    ///     use serde::{de::Deserializer, Serializer};
+    ///     use super::*;
+    ///
+    ///     pub fn deserialize<'de, D>(deserializer: D) -> Result<Mutex<Bar>, D::Error>
+    ///         where D: Deserializer<'de>
+    ///     {
+    ///         Bar::deserialize(SingletonMap::new(deserializer))
+    ///         .map(Mutex::new)
+    ///     }
+    ///     pub fn serialize<S>(bar: &Mutex<Bar>, serializer: S) -> Result<S::Ok, S::Error>
+    ///         where S: Serializer
+    ///     {
+    ///         let guard = bar.try_lock().unwrap();
+    ///         (*guard).serialize(SingletonMap::new(serializer))
+    ///     }
+    /// }
+    /// # fn main() {}
+    /// ```
+    pub struct SingletonMap<D> {
         delegate: D,
+    }
+
+    impl<D> SingletonMap<D> {
+        /// Create a new `SingletonMap`, wrapping either a `Serializer` or a `Deserializer`.
+        pub fn new(delegate: D) -> Self {
+            SingletonMap {delegate}
+        }
     }
 
     impl<D> Serialize for SingletonMap<D>
@@ -117,9 +172,7 @@ pub mod singleton_map {
         where
             S: Serializer,
         {
-            self.delegate.serialize(SingletonMap {
-                delegate: serializer,
-            })
+            self.delegate.serialize(SingletonMap::new(serializer))
         }
     }
 
@@ -255,7 +308,7 @@ pub mod singleton_map {
             V: ?Sized + Serialize,
         {
             self.delegate
-                .serialize_some(&SingletonMap { delegate: value })
+                .serialize_some(&SingletonMap::new(value))
         }
 
         fn serialize_seq(self, len: Option<usize>) -> Result<Self::SerializeSeq, Self::Error> {
@@ -324,7 +377,8 @@ pub mod singleton_map {
         }
     }
 
-    struct SerializeTupleVariantAsSingletonMap<M> {
+    #[doc(hidden)]
+    pub struct SerializeTupleVariantAsSingletonMap<M> {
         map: M,
         sequence: Sequence,
     }
@@ -353,7 +407,8 @@ pub mod singleton_map {
         }
     }
 
-    struct SerializeStructVariantAsSingletonMap<M> {
+    #[doc(hidden)]
+    pub struct SerializeStructVariantAsSingletonMap<M> {
         map: M,
         mapping: Mapping,
     }
@@ -688,9 +743,7 @@ pub mod singleton_map {
         where
             D: Deserializer<'de>,
         {
-            self.delegate.visit_some(SingletonMap {
-                delegate: deserializer,
-            })
+            self.delegate.visit_some(SingletonMap::new(deserializer))
         }
 
         fn visit_unit<E>(self) -> Result<Self::Value, E>
