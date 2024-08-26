@@ -160,7 +160,7 @@ pub mod singleton_map {
     impl<D> SingletonMap<D> {
         /// Create a new `SingletonMap`, wrapping either a `Serializer` or a `Deserializer`.
         pub fn new(delegate: D) -> Self {
-            SingletonMap {delegate}
+            SingletonMap { delegate }
         }
     }
 
@@ -307,8 +307,7 @@ pub mod singleton_map {
         where
             V: ?Sized + Serialize,
         {
-            self.delegate
-                .serialize_some(&SingletonMap::new(value))
+            self.delegate.serialize_some(&SingletonMap::new(value))
         }
 
         fn serialize_seq(self, len: Option<usize>) -> Result<Self::SerializeSeq, Self::Error> {
