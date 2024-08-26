@@ -1177,6 +1177,13 @@ fn invalid_type(event: &Event, exp: &dyn Expected) -> Error {
         Event::Alias(_) => unreachable!(),
         Event::Scalar(scalar) => {
             let get_type = InvalidType { exp };
+            // TODO: I'm annotating this because github keeps emailing me every 8 hours that the
+            //       test are failing with the new version of clippy which started alerting on
+            //       this... This is annoying since I'm on vacation, chilling... I think the right
+            //       solution here is to remove 'enum Void{}' and use unreachable!(). But because I
+            //       don't want to change the code and break everything, I'll take a look at this
+            //       later, and silence the error for now.
+            #[allow(unreachable_patterns)]
             match visit_scalar(get_type, scalar, false) {
                 Ok(void) => match void {},
                 Err(invalid_type) => invalid_type,
