@@ -22,13 +22,13 @@ type Result<T, E = Error> = std::result::Result<T, E>;
 /// # Example
 ///
 /// ```
-/// use anyhow::Result;
 /// use serde::Serialize;
 /// use std::collections::BTreeMap;
+/// use serde_yaml_ng::{Result, Serializer};
 ///
 /// fn main() -> Result<()> {
 ///     let mut buffer = Vec::new();
-///     let mut ser = serde_yaml_ng::Serializer::new(&mut buffer);
+///     let mut ser = Serializer::new(&mut buffer);
 ///
 ///     let mut object = BTreeMap::new();
 ///     object.insert("k", 107);
