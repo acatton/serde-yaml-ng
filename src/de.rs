@@ -748,7 +748,8 @@ struct EnumAccess<'de, 'document, 'variant> {
     de: &'variant mut DeserializerFromEvents<'de, 'document>,
     name: Option<&'static str>,
     tag: &'document str,
-    has_visited: bool, // This is a hack to run visitor.visit_map() instead of visitor.visit_enum() when is_serde_content is true
+    /// a flag to do a hack to run visitor.visit_map() instead of visitor.visit_enum() when is_serde_content is true
+    has_visited: bool, 
 }
 
 impl<'de, 'document, 'variant> de::EnumAccess<'de> for EnumAccess<'de, 'document, 'variant> {
