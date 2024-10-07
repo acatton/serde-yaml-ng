@@ -4,16 +4,17 @@ use crate::libyaml::parser::{MappingStart, Scalar, ScalarStyle, SequenceStart};
 use crate::libyaml::tag::Tag;
 use crate::loader::{Document, Loader};
 use crate::path::Path;
+use crate::Value;
 use serde::de::value::StrDeserializer;
 use serde::de::{
     self, Deserialize, DeserializeOwned, DeserializeSeed, Expected, IgnoredAny, Unexpected, Visitor,
 };
-use std::fmt;
-use std::io;
+use std::io::{self, Read};
 use std::mem;
 use std::num::ParseIntError;
 use std::str;
 use std::sync::Arc;
+use std::{fmt, result};
 
 type Result<T, E = Error> = std::result::Result<T, E>;
 
@@ -109,6 +110,7 @@ impl<'de> Deserializer<'de> {
                     path: Path::Root,
                     remaining_depth: 128,
                     current_enum: None,
+                    serde_content_newtype: false,
                 })?;
                 if let Some(parse_error) = document.error {
                     return Err(error::shared(parse_error));
@@ -130,6 +132,7 @@ impl<'de> Deserializer<'de> {
             path: Path::Root,
             remaining_depth: 128,
             current_enum: None,
+            serde_content_newtype: false,
         })?;
         if let Some(parse_error) = document.error {
             return Err(error::shared(parse_error));
@@ -434,6 +437,7 @@ struct DeserializerFromEvents<'de, 'document> {
     path: Path<'document>,
     remaining_depth: u8,
     current_enum: Option<CurrentEnum<'document>>,
+    serde_content_newtype: bool,
 }
 
 #[derive(Copy, Clone)]
@@ -487,6 +491,7 @@ impl<'de, 'document> DeserializerFromEvents<'de, 'document> {
                     path: Path::Alias { parent: &self.path },
                     remaining_depth: self.remaining_depth,
                     current_enum: None,
+                    serde_content_newtype: self.serde_content_newtype,
                 })
             }
             None => panic!("unresolved alias: {}", *pos),
@@ -672,6 +677,7 @@ impl<'de, 'document, 'seq> de::SeqAccess<'de> for SeqAccess<'de, 'document, 'seq
                     },
                     remaining_depth: self.de.remaining_depth,
                     current_enum: None,
+                    serde_content_newtype: self.de.serde_content_newtype,
                 };
                 self.len += 1;
                 seed.deserialize(&mut element_de).map(Some)
@@ -732,6 +738,7 @@ impl<'de, 'document, 'map> de::MapAccess<'de> for MapAccess<'de, 'document, 'map
             },
             remaining_depth: self.de.remaining_depth,
             current_enum: None,
+            serde_content_newtype: self.de.serde_content_newtype,
         };
         seed.deserialize(&mut value_de)
     }
@@ -741,6 +748,7 @@ struct EnumAccess<'de, 'document, 'variant> {
     de: &'variant mut DeserializerFromEvents<'de, 'document>,
     name: Option<&'static str>,
     tag: &'document str,
+    has_visited: bool, // This is a hack to run visitor.visit_map() instead of visitor.visit_enum() when is_serde_content is true
 }
 
 impl<'de, 'document, 'variant> de::EnumAccess<'de> for EnumAccess<'de, 'document, 'variant> {
@@ -763,8 +771,49 @@ impl<'de, 'document, 'variant> de::EnumAccess<'de> for EnumAccess<'de, 'document
                 name: self.name,
                 tag: self.tag,
             }),
+            serde_content_newtype: self.de.serde_content_newtype,
         };
         Ok((variant, visitor))
+    }
+}
+
+impl<'de, 'document, 'variant> de::MapAccess<'de> for EnumAccess<'de, 'document, 'variant> {
+    type Error = Error;
+
+    fn next_key_seed<K>(&mut self, seed: K) -> std::result::Result<Option<K::Value>, Self::Error>
+    where
+        K: DeserializeSeed<'de>,
+    {
+        if self.has_visited {
+            return Ok(None);
+        }
+        self.has_visited = true;
+        let str_de = StrDeserializer::<Error>::new(self.tag);
+        let variant = seed.deserialize(str_de)?;
+        Ok(Some(variant))
+    }
+
+    fn next_value_seed<V>(&mut self, seed: V) -> std::result::Result<V::Value, Self::Error>
+    where
+        V: DeserializeSeed<'de>,
+    {
+        let old_serde_content_newtype = self.de.serde_content_newtype;
+        self.de.serde_content_newtype = true;
+        let mut visitor = DeserializerFromEvents {
+            document: self.de.document,
+            pos: self.de.pos,
+            jumpcount: self.de.jumpcount,
+            path: self.de.path,
+            remaining_depth: self.de.remaining_depth,
+            current_enum: Some(CurrentEnum {
+                name: self.name,
+                tag: self.tag,
+            }),
+            serde_content_newtype: self.de.serde_content_newtype,
+        };
+        let result = seed.deserialize(&mut visitor)?;
+        self.de.serde_content_newtype = old_serde_content_newtype;
+        Ok(result)
     }
 }
 
@@ -1222,39 +1271,70 @@ impl<'de, 'document> de::Deserializer<'de> for &mut DeserializerFromEvents<'de, 
             }
             parse_tag(tag)
         }
+        // HACK: switch to JSON enum semantics for JSON content
+        // Robust impl blocked on https://github.com/serde-rs/serde/pull/2420
+        let is_serde_content =
+            std::any::type_name::<V::Value>() == "serde::__private::de::content::Content";
+
+        let old_serde_content_newtype = self.serde_content_newtype;
+        self.serde_content_newtype = false;
         loop {
             match next {
                 Event::Alias(mut pos) => break self.jump(&mut pos)?.deserialize_any(visitor),
                 Event::Scalar(scalar) => {
                     if let Some(tag) = enum_tag(&scalar.tag, tagged_already) {
                         *self.pos -= 1;
-                        break visitor.visit_enum(EnumAccess {
-                            de: self,
-                            name: None,
-                            tag,
-                        });
+                        break {
+                            let access = EnumAccess {
+                                de: self,
+                                name: None,
+                                tag,
+                                has_visited: false,
+                            };
+                            if is_serde_content || old_serde_content_newtype {
+                                visitor.visit_map(access)
+                            } else {
+                                visitor.visit_enum(access)
+                            }
+                        };
                     }
                     break visit_scalar(visitor, scalar, tagged_already);
                 }
                 Event::SequenceStart(sequence) => {
                     if let Some(tag) = enum_tag(&sequence.tag, tagged_already) {
                         *self.pos -= 1;
-                        break visitor.visit_enum(EnumAccess {
-                            de: self,
-                            name: None,
-                            tag,
-                        });
+                        break {
+                            let access = EnumAccess {
+                                de: self,
+                                name: None,
+                                tag,
+                                has_visited: false,
+                            };
+                            if is_serde_content || old_serde_content_newtype {
+                                visitor.visit_map(access)
+                            } else {
+                                visitor.visit_enum(access)
+                            }
+                        };
                     }
                     break self.visit_sequence(visitor, mark);
                 }
                 Event::MappingStart(mapping) => {
                     if let Some(tag) = enum_tag(&mapping.tag, tagged_already) {
                         *self.pos -= 1;
-                        break visitor.visit_enum(EnumAccess {
-                            de: self,
-                            name: None,
-                            tag,
-                        });
+                        break {
+                            let access = EnumAccess {
+                                de: self,
+                                name: None,
+                                tag,
+                                has_visited: false,
+                            };
+                            if is_serde_content || old_serde_content_newtype {
+                                visitor.visit_map(access)
+                            } else {
+                                visitor.visit_enum(access)
+                            }
+                        };
                     }
                     break self.visit_mapping(visitor, mark);
                 }
@@ -1749,6 +1829,7 @@ impl<'de, 'document> de::Deserializer<'de> for &mut DeserializerFromEvents<'de, 
                             de: self,
                             name: Some(name),
                             tag,
+                            has_visited: false,
                         });
                     }
                     visitor.visit_enum(UnitVariantAccess { de: self })
@@ -1759,6 +1840,7 @@ impl<'de, 'document> de::Deserializer<'de> for &mut DeserializerFromEvents<'de, 
                             de: self,
                             name: Some(name),
                             tag,
+                            has_visited: false,
                         });
                     }
                     let err =
@@ -1771,6 +1853,7 @@ impl<'de, 'document> de::Deserializer<'de> for &mut DeserializerFromEvents<'de, 
                             de: self,
                             name: Some(name),
                             tag,
+                            has_visited: false,
                         });
                     }
                     let err =
