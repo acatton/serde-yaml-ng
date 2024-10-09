@@ -268,7 +268,7 @@ impl ErrorImpl {
             _ => {
                 f.write_str("Error(")?;
                 struct MessageNoMark<'a>(&'a ErrorImpl);
-                impl<'a> Display for MessageNoMark<'a> {
+                impl Display for MessageNoMark<'_> {
                     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
                         self.0.message_no_mark(f)
                     }

@@ -10,11 +10,11 @@ pub enum Path<'a> {
     Unknown { parent: &'a Path<'a> },
 }
 
-impl<'a> Display for Path<'a> {
+impl Display for Path<'_> {
     fn fmt(&self, formatter: &mut fmt::Formatter) -> Result<(), fmt::Error> {
         struct Parent<'a>(&'a Path<'a>);
 
-        impl<'a> Display for Parent<'a> {
+        impl Display for Parent<'_> {
             fn fmt(&self, formatter: &mut fmt::Formatter) -> Result<(), fmt::Error> {
                 match self.0 {
                     Path::Root => Ok(()),

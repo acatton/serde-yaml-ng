@@ -10,8 +10,8 @@ pub(crate) struct CStr<'a> {
     marker: PhantomData<&'a [u8]>,
 }
 
-unsafe impl<'a> Send for CStr<'a> {}
-unsafe impl<'a> Sync for CStr<'a> {}
+unsafe impl Send for CStr<'_> {}
+unsafe impl Sync for CStr<'_> {}
 
 impl<'a> CStr<'a> {
     pub fn from_bytes_with_nul(bytes: &'static [u8]) -> Self {
@@ -44,7 +44,7 @@ impl<'a> CStr<'a> {
     }
 }
 
-impl<'a> Display for CStr<'a> {
+impl Display for CStr<'_> {
     fn fmt(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
         let ptr = self.ptr.as_ptr();
         let len = self.len();
@@ -53,7 +53,7 @@ impl<'a> Display for CStr<'a> {
     }
 }
 
-impl<'a> Debug for CStr<'a> {
+impl Debug for CStr<'_> {
     fn fmt(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
         let ptr = self.ptr.as_ptr();
         let len = self.len();

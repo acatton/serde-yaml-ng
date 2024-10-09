@@ -142,7 +142,7 @@ impl<'de> Deserializer<'de> {
     }
 }
 
-impl<'de> Iterator for Deserializer<'de> {
+impl Iterator for Deserializer<'_> {
     type Item = Self;
 
     fn next(&mut self) -> Option<Self> {
@@ -649,7 +649,7 @@ struct SeqAccess<'de, 'document, 'seq> {
     len: usize,
 }
 
-impl<'de, 'document, 'seq> de::SeqAccess<'de> for SeqAccess<'de, 'document, 'seq> {
+impl<'de> de::SeqAccess<'de> for SeqAccess<'de, '_, '_> {
     type Error = Error;
 
     fn next_element_seed<T>(&mut self, seed: T) -> Result<Option<T::Value>>
@@ -687,7 +687,7 @@ struct MapAccess<'de, 'document, 'map> {
     key: Option<&'document [u8]>,
 }
 
-impl<'de, 'document, 'map> de::MapAccess<'de> for MapAccess<'de, 'document, 'map> {
+impl<'de> de::MapAccess<'de> for MapAccess<'de, '_, '_> {
     type Error = Error;
 
     fn next_key_seed<K>(&mut self, seed: K) -> Result<Option<K::Value>>
@@ -743,7 +743,7 @@ struct EnumAccess<'de, 'document, 'variant> {
     tag: &'document str,
 }
 
-impl<'de, 'document, 'variant> de::EnumAccess<'de> for EnumAccess<'de, 'document, 'variant> {
+impl<'de, 'variant> de::EnumAccess<'de> for EnumAccess<'de, '_, 'variant> {
     type Error = Error;
     type Variant = DeserializerFromEvents<'de, 'variant>;
 
@@ -768,7 +768,7 @@ impl<'de, 'document, 'variant> de::EnumAccess<'de> for EnumAccess<'de, 'document
     }
 }
 
-impl<'de, 'document> de::VariantAccess<'de> for DeserializerFromEvents<'de, 'document> {
+impl<'de> de::VariantAccess<'de> for DeserializerFromEvents<'de, '_> {
     type Error = Error;
 
     fn unit_variant(mut self) -> Result<()> {
@@ -801,7 +801,7 @@ struct UnitVariantAccess<'de, 'document, 'variant> {
     de: &'variant mut DeserializerFromEvents<'de, 'document>,
 }
 
-impl<'de, 'document, 'variant> de::EnumAccess<'de> for UnitVariantAccess<'de, 'document, 'variant> {
+impl<'de> de::EnumAccess<'de> for UnitVariantAccess<'de, '_, '_> {
     type Error = Error;
     type Variant = Self;
 
@@ -813,9 +813,7 @@ impl<'de, 'document, 'variant> de::EnumAccess<'de> for UnitVariantAccess<'de, 'd
     }
 }
 
-impl<'de, 'document, 'variant> de::VariantAccess<'de>
-    for UnitVariantAccess<'de, 'document, 'variant>
-{
+impl<'de> de::VariantAccess<'de> for UnitVariantAccess<'de, '_, '_> {
     type Error = Error;
 
     fn unit_variant(self) -> Result<()> {
@@ -1163,7 +1161,7 @@ fn invalid_type(event: &Event, exp: &dyn Expected) -> Error {
         exp: &'a dyn Expected,
     }
 
-    impl<'de, 'a> Visitor<'de> for InvalidType<'a> {
+    impl Visitor<'_> for InvalidType<'_> {
         type Value = Void;
 
         fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
@@ -1195,7 +1193,7 @@ fn invalid_type(event: &Event, exp: &dyn Expected) -> Error {
     }
 }
 
-fn parse_tag(libyaml_tag: &Option<Tag>) -> Option<&str> {
+fn parse_tag(libyaml_tag: Option<&Tag>) -> Option<&str> {
     let mut bytes: &[u8] = libyaml_tag.as_ref()?;
     if let (b'!', rest) = bytes.split_first()? {
         if !rest.is_empty() {
@@ -1207,7 +1205,7 @@ fn parse_tag(libyaml_tag: &Option<Tag>) -> Option<&str> {
     }
 }
 
-impl<'de, 'document> de::Deserializer<'de> for &mut DeserializerFromEvents<'de, 'document> {
+impl<'de> de::Deserializer<'de> for &mut DeserializerFromEvents<'de, '_> {
     type Error = Error;
 
     fn deserialize_any<V>(self, visitor: V) -> Result<V::Value>
@@ -1216,7 +1214,7 @@ impl<'de, 'document> de::Deserializer<'de> for &mut DeserializerFromEvents<'de, 
     {
         let tagged_already = self.current_enum.is_some();
         let (next, mark) = self.next_event_mark()?;
-        fn enum_tag(tag: &Option<Tag>, tagged_already: bool) -> Option<&str> {
+        fn enum_tag(tag: Option<&Tag>, tagged_already: bool) -> Option<&str> {
             if tagged_already {
                 return None;
             }
@@ -1226,7 +1224,7 @@ impl<'de, 'document> de::Deserializer<'de> for &mut DeserializerFromEvents<'de, 
             match next {
                 Event::Alias(mut pos) => break self.jump(&mut pos)?.deserialize_any(visitor),
                 Event::Scalar(scalar) => {
-                    if let Some(tag) = enum_tag(&scalar.tag, tagged_already) {
+                    if let Some(tag) = enum_tag(scalar.tag.as_ref(), tagged_already) {
                         *self.pos -= 1;
                         break visitor.visit_enum(EnumAccess {
                             de: self,
@@ -1237,7 +1235,7 @@ impl<'de, 'document> de::Deserializer<'de> for &mut DeserializerFromEvents<'de, 
                     break visit_scalar(visitor, scalar, tagged_already);
                 }
                 Event::SequenceStart(sequence) => {
-                    if let Some(tag) = enum_tag(&sequence.tag, tagged_already) {
+                    if let Some(tag) = enum_tag(sequence.tag.as_ref(), tagged_already) {
                         *self.pos -= 1;
                         break visitor.visit_enum(EnumAccess {
                             de: self,
@@ -1248,7 +1246,7 @@ impl<'de, 'document> de::Deserializer<'de> for &mut DeserializerFromEvents<'de, 
                     break self.visit_sequence(visitor, mark);
                 }
                 Event::MappingStart(mapping) => {
-                    if let Some(tag) = enum_tag(&mapping.tag, tagged_already) {
+                    if let Some(tag) = enum_tag(mapping.tag.as_ref(), tagged_already) {
                         *self.pos -= 1;
                         break visitor.visit_enum(EnumAccess {
                             de: self,
@@ -1744,7 +1742,7 @@ impl<'de, 'document> de::Deserializer<'de> for &mut DeserializerFromEvents<'de, 
                         .deserialize_enum(name, variants, visitor)
                 }
                 Event::Scalar(scalar) => {
-                    if let Some(tag) = parse_tag(&scalar.tag) {
+                    if let Some(tag) = parse_tag(scalar.tag.as_ref()) {
                         return visitor.visit_enum(EnumAccess {
                             de: self,
                             name: Some(name),
@@ -1754,7 +1752,7 @@ impl<'de, 'document> de::Deserializer<'de> for &mut DeserializerFromEvents<'de, 
                     visitor.visit_enum(UnitVariantAccess { de: self })
                 }
                 Event::MappingStart(mapping) => {
-                    if let Some(tag) = parse_tag(&mapping.tag) {
+                    if let Some(tag) = parse_tag(mapping.tag.as_ref()) {
                         return visitor.visit_enum(EnumAccess {
                             de: self,
                             name: Some(name),
@@ -1766,7 +1764,7 @@ impl<'de, 'document> de::Deserializer<'de> for &mut DeserializerFromEvents<'de, 
                     Err(error::fix_mark(err, mark, self.path))
                 }
                 Event::SequenceStart(sequence) => {
-                    if let Some(tag) = parse_tag(&sequence.tag) {
+                    if let Some(tag) = parse_tag(sequence.tag.as_ref()) {
                         return visitor.visit_enum(EnumAccess {
                             de: self,
                             name: Some(name),

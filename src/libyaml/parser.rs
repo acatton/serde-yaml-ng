@@ -160,7 +160,7 @@ unsafe fn optional_tag(tag: *const u8) -> Option<Tag> {
     Some(Tag(Box::from(cstr.to_bytes())))
 }
 
-impl<'input> Debug for Scalar<'input> {
+impl Debug for Scalar<'_> {
     fn fmt(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
         let Scalar {
             anchor,
@@ -172,7 +172,7 @@ impl<'input> Debug for Scalar<'input> {
 
         struct LossySlice<'a>(&'a [u8]);
 
-        impl<'a> Debug for LossySlice<'a> {
+        impl Debug for LossySlice<'_> {
             fn fmt(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
                 cstr::debug_lossy(self.0, formatter)
             }
@@ -194,7 +194,7 @@ impl Debug for Anchor {
     }
 }
 
-impl<'input> Drop for ParserPinned<'input> {
+impl Drop for ParserPinned<'_> {
     fn drop(&mut self) {
         unsafe { sys::yaml_parser_delete(&mut self.sys) }
     }

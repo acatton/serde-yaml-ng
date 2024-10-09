@@ -14,7 +14,7 @@ impl PartialEq<str> for Value {
     }
 }
 
-impl<'a> PartialEq<&'a str> for Value {
+impl PartialEq<&str> for Value {
     /// Compare `&str` with YAML value
     ///
     /// # Examples

@@ -266,7 +266,7 @@ pub trait Index: private::Sealed {
 
 struct HashLikeValue<'a>(&'a str);
 
-impl<'a> indexmap::Equivalent<Value> for HashLikeValue<'a> {
+impl indexmap::Equivalent<Value> for HashLikeValue<'_> {
     fn equivalent(&self, key: &Value) -> bool {
         match key {
             Value::String(string) => self.0 == string,
@@ -276,7 +276,7 @@ impl<'a> indexmap::Equivalent<Value> for HashLikeValue<'a> {
 }
 
 // NOTE: This impl must be consistent with Value's Hash impl.
-impl<'a> Hash for HashLikeValue<'a> {
+impl Hash for HashLikeValue<'_> {
     fn hash<H: Hasher>(&self, state: &mut H) {
         const STRING: Value = Value::String(String::new());
         mem::discriminant(&STRING).hash(state);
@@ -835,7 +835,7 @@ struct DuplicateKeyError<'a> {
     entry: OccupiedEntry<'a>,
 }
 
-impl<'a> Display for DuplicateKeyError<'a> {
+impl Display for DuplicateKeyError<'_> {
     fn fmt(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
         formatter.write_str("duplicate entry ")?;
         match self.entry.key() {

@@ -210,7 +210,7 @@ unsafe fn write_handler(data: *mut c_void, buffer: *mut u8, size: u64) -> i32 {
     }
 }
 
-impl<'a> Drop for EmitterPinned<'a> {
+impl Drop for EmitterPinned<'_> {
     fn drop(&mut self) {
         unsafe { sys::yaml_emitter_delete(&mut self.sys) }
     }

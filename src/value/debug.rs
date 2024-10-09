@@ -21,7 +21,7 @@ impl Debug for Value {
 
 struct DisplayNumber<'a>(&'a Number);
 
-impl<'a> Debug for DisplayNumber<'a> {
+impl Debug for DisplayNumber<'_> {
     fn fmt(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
         Display::fmt(self.0, formatter)
     }

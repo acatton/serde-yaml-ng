@@ -409,7 +409,7 @@ impl Serialize for Number {
 
 struct NumberVisitor;
 
-impl<'de> Visitor<'de> for NumberVisitor {
+impl Visitor<'_> for NumberVisitor {
     type Value = Number;
 
     fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
@@ -464,7 +464,7 @@ impl<'de> Deserializer<'de> for Number {
     }
 }
 
-impl<'de, 'a> Deserializer<'de> for &'a Number {
+impl<'de> Deserializer<'de> for &Number {
     type Error = Error;
 
     #[inline]
