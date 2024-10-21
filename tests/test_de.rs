@@ -20,6 +20,7 @@ where
     assert_eq!(*expected, deserialized);
 
     let value: Value = serde_yaml_ng::from_str(yaml).unwrap();
+    dbg!("{:?}", &value);
     let deserialized = T::deserialize(&value).unwrap();
     assert_eq!(*expected, deserialized);
 
@@ -240,6 +241,48 @@ fn test_enum_representations() {
     "};
     let expected = vec![Enum::String(String::new())];
     test_de_no_value(yaml, &expected);
+}
+
+#[test]
+fn test_enum_outer_flatten() {
+    #[derive(Deserialize, PartialEq, Debug)]
+    enum Enum {
+        A,
+        B,
+        C(String),
+    }
+    #[derive(Deserialize, PartialEq, Debug)]
+    struct Inner {
+        a: Enum,
+    }
+    #[derive(Deserialize, PartialEq, Debug)]
+    struct Outer {
+        #[serde(flatten)]
+        inner: Inner,
+    }
+
+    let yaml: &str = indoc! {"
+        a: !C x
+    "};
+    let inner = Inner {
+        a: Enum::C("x".to_owned()),
+    };
+    test_de(yaml, &inner);
+    test_de(yaml, &Outer { inner });
+    let yaml: &str = indoc! {"
+        a: !C
+    "};
+    // let expected = Outer {
+    //     inner: Inner {
+    //         a: Enum::C(String::new()),
+    //     },
+    // };
+    // test_de_no_value(yaml, &expected);
+    // This should fail. Blocked by by https://github.com/serde-rs/serde/issues/1183
+    assert!(serde_yaml_ng::from_str::<Outer>(yaml).is_err());
+
+    serde_yaml_ng::from_str::<serde_yaml_ng::Value>(yaml).unwrap();
+    serde_yaml_ng::from_str::<serde::de::IgnoredAny>(yaml).unwrap();
 }
 
 #[test]

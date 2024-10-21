@@ -11,6 +11,10 @@ use std::fmt;
 use std::slice;
 use std::vec;
 
+use self::tagged::TaggedValueAsMapAccess;
+
+use super::tagged::TaggedValueRefAsMapAccess;
+
 impl<'de> Deserialize<'de> for Value {
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
     where
@@ -199,6 +203,8 @@ impl<'de> Deserializer<'de> for Value {
     where
         V: Visitor<'de>,
     {
+        let is_serde_value = std::any::type_name::<V::Value>()
+            == std::any::type_name::<serde::__private::de::Content>();
         match self {
             Value::Null => visitor.visit_unit(),
             Value::Bool(v) => visitor.visit_bool(v),
@@ -206,6 +212,9 @@ impl<'de> Deserializer<'de> for Value {
             Value::String(v) => visitor.visit_string(v),
             Value::Sequence(v) => visit_sequence(v, visitor),
             Value::Mapping(v) => visit_mapping(v, visitor),
+            Value::Tagged(tagged) if is_serde_value => {
+                visitor.visit_map(TaggedValueAsMapAccess::from(*tagged))
+            }
             Value::Tagged(tagged) => visitor.visit_enum(*tagged),
         }
     }
@@ -716,6 +725,8 @@ impl<'de> Deserializer<'de> for &'de Value {
     where
         V: Visitor<'de>,
     {
+        let is_serde_content = std::any::type_name::<V::Value>()
+            == std::any::type_name::<serde::__private::de::Content>();
         match self {
             Value::Null => visitor.visit_unit(),
             Value::Bool(v) => visitor.visit_bool(*v),
@@ -723,6 +734,9 @@ impl<'de> Deserializer<'de> for &'de Value {
             Value::String(v) => visitor.visit_borrowed_str(v),
             Value::Sequence(v) => visit_sequence_ref(v, visitor),
             Value::Mapping(v) => visit_mapping_ref(v, visitor),
+            Value::Tagged(tagged) if is_serde_content => {
+                visitor.visit_map(TaggedValueRefAsMapAccess::from(&**tagged))
+            }
             Value::Tagged(tagged) => visitor.visit_enum(&**tagged),
         }
     }
