@@ -3,7 +3,8 @@ use crate::value::Value;
 use crate::Error;
 use serde::de::value::{BorrowedStrDeserializer, StrDeserializer};
 use serde::de::{
-    Deserialize, DeserializeSeed, Deserializer, EnumAccess, Error as _, VariantAccess, Visitor,
+    Deserialize, DeserializeSeed, Deserializer, EnumAccess, Error as _, MapAccess, VariantAccess,
+    Visitor,
 };
 use serde::forward_to_deserialize_any;
 use serde::ser::{Serialize, SerializeMap, Serializer};
@@ -257,6 +258,38 @@ impl<'de> EnumAccess<'de> for TaggedValue {
         let tag = StrDeserializer::<Error>::new(nobang(&self.tag.string));
         let value = seed.deserialize(tag)?;
         Ok((value, self.value))
+    }
+}
+
+pub struct TaggedValueMapAccess {
+    inner: Option<TaggedValue>,
+}
+
+impl From<TaggedValue> for TaggedValueMapAccess {
+    fn from(inner: TaggedValue) -> Self {
+        TaggedValueMapAccess { inner: Some(inner) }
+    }
+}
+
+impl<'de> MapAccess<'de> for TaggedValueMapAccess {
+    type Error = Error;
+
+    fn next_key_seed<K>(&mut self, seed: K) -> Result<Option<K::Value>, Error>
+    where
+        K: DeserializeSeed<'de>,
+    {
+        if self.inner.is_none() {
+            return Ok(None);
+        }
+        let tag = StrDeserializer::<Error>::new(nobang(&self.inner.as_ref().unwrap().tag.string));
+        seed.deserialize(tag).map(Some)
+    }
+
+    fn next_value_seed<V>(&mut self, seed: V) -> Result<V::Value, Error>
+    where
+        V: DeserializeSeed<'de>,
+    {
+        seed.deserialize(self.inner.take().unwrap().value.clone())
     }
 }
 
