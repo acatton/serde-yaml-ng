@@ -4,7 +4,9 @@ on:
   push:
   pull_request:
   workflow_dispatch:
-  schedule: [cron: "40 1 * * *"]
+  # TODO: This was annoying me because clippy breaks once in a while.
+  # This needs to be re-enabled at some point
+  # schedule: [cron: "40 1 * * *"]
 
 permissions:
   contents: read
