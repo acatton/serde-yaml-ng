@@ -962,6 +962,16 @@ fn parse_unsigned_int<T>(
             return Some(int);
         }
     }
+
+    if unpositive.starts_with("0")
+        && unpositive.len() > 1
+        && unpositive.chars().all(|c| c.is_digit(8))
+    {
+        if let Ok(int) = from_str_radix(unpositive, 8) {
+            return Some(int);
+        }
+    }
+
     if unpositive.starts_with(['+', '-']) {
         return None;
     }

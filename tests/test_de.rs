@@ -59,6 +59,32 @@ where
 }
 
 #[test]
+fn test_yaml1_1_octal_values() {
+    let yaml = r#"
+defaultValue: 0400
+stringValue: "0400"
+"#;
+    let value: Value = serde_yaml_ng::from_str(yaml).unwrap();
+
+    if let Value::Mapping(mapping) = value {
+        assert_eq!(
+            mapping
+                .get(&Value::String("defaultValue".to_string()))
+                .unwrap(),
+            &Value::Number(Number::from(256))
+        );
+        assert_eq!(
+            mapping
+                .get(&Value::String("stringValue".to_string()))
+                .unwrap(),
+            &Value::String("0400".to_string())
+        );
+    } else {
+        panic!("Expected a mapping");
+    }
+}
+
+#[test]
 fn test_borrowed() {
     let yaml = indoc! {"
         - plain nonàscii
@@ -438,8 +464,8 @@ fn test_numbers() {
 
     // NOT numbers.
     let cases = [
-        "0127", "+0127", "-0127", "++.inf", "+-.inf", "++1", "+-1", "-+1", "--1", "0x+1", "0x-1",
-        "-0x+1", "-0x-1", "++0x1", "+-0x1", "-+0x1", "--0x1",
+        "++.inf", "+-.inf", "++1", "+-1", "-+1", "--1", "0x+1", "0x-1", "-0x+1", "-0x-1", "++0x1",
+        "+-0x1", "-+0x1", "--0x1",
     ];
     for yaml in &cases {
         let value = serde_yaml_ng::from_str::<Value>(yaml).unwrap();
