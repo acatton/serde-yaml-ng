@@ -1228,7 +1228,7 @@ impl Value {
     }
 
     #[cold]
-    pub(crate) fn unexpected(&self) -> Unexpected {
+    pub(crate) fn unexpected(&self) -> Unexpected<'_> {
         match self {
             Value::Null => Unexpected::Unit,
             Value::Bool(b) => Unexpected::Bool(*b),

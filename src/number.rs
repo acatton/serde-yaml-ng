@@ -552,7 +552,7 @@ impl Hash for Number {
     }
 }
 
-pub(crate) fn unexpected(number: &Number) -> Unexpected {
+pub(crate) fn unexpected(number: &Number) -> Unexpected<'_> {
     match number.n {
         N::PosInt(u) => Unexpected::Unsigned(u),
         N::NegInt(i) => Unexpected::Signed(i),
