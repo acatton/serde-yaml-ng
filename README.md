@@ -142,6 +142,10 @@ fn main() -> Result<(), serde_yaml_ng::Error> {
 
 ## Why?
 
+### Original: May 2024
+
+*(This is out of date, provided for historical context, see the next update)*
+
 I haven't found any good fork as of the start of this project. The best candidate was
 [serde\_yml](https://github.com/sebastienrousseau/serde_yml) which is based on
 [a giant "Initial commit" from the main maintainer](https://github.com/sebastienrousseau/serde_yml/commit/4312d4a56225b223410b5133af571fd13e62f18a).
@@ -153,6 +157,83 @@ As we say in French: "*You are never better served than by yourself*". 😉
 
 Use it, don't use it, I don't care. I'll try to fix as many bugs as I can.
 I'll accept pull requests if they're reasonable or easy to work with.
+
+### Update: July 2025
+
+There was a huge backlash against
+[serde\_yml](https://github.com/sebastienrousseau/serde\_yml) on [Twitter/X by
+David Tolnay, the original author of serde-yaml](https://xcancel.com/davidtolnay/status/1883906113428676938).
+
+A copy of their tweet is provided here in case
+[xcancel.com](https://xcancel.com/) gets shut down. (By the way, xcancel.com accepts donations)
+
+> David Tolnay (@davidtolnay) - Jan 27 2025
+>
+> Not long ago, I used to have a more optimistic impression of Rust users. I
+> would not have guessed that so many otherwise-judicious people would go for
+> blatantly AI-"maintained" Rust libraries.
+>
+> The `serde_yml` crate is a fork of a high-quality but unmaintained library.
+> In the fork, the AI has taken initiative to add a big heap of stuff that is
+> variously complete nonsense ([docs.rs/serde_yml/0.0.11/ser…](https://docs.rs/serde_yml/0.0.11/serde_yml/macro.macro_get_field.html),
+> [docs.rs/serde_yml/0.0.11/src…](https://docs.rs/serde_yml/0.0.11/src/serde_yml/macros/macro_get_field.rs.html#14-49))
+> or unsound ([docs.rs/serde_yml/0.0.11/ser…](https://docs.rs/serde_yml/0.0.11/serde_yml/ser/struct.Serializer.html#structfield.emitter)). On
+> top of this, the crate's documentation has been broken in docs.rs for the last
+> 5 months because AI hallucinated a nonexistent rustdoc flag into the crate's
+> configuration.
+>
+> And yet 134 other published packages have chosen to adopt this? Including
+> high-profile competently maintained projects like Jiff (for tests only),
+> axodotdev, Wasmer, MiniJinja, and Holochain. This does not bode well.
+>
+> The bar for someone to do better at a YAML library is so low.
+
+Attached to this tweet was the following code:
+
+```rust
+fn main() {
+	let a = ".".repeat(100);
+	let emitter = {
+		let mut buf = [0u8; 100];
+		serde_yml::Serializer::new(&mut buf.as_mut_slice()).emitter
+	};
+	let s = ".".repeat(100);
+	emitter.into_inner().write_all(&[1u8; 100]).unwrap();
+	println!("{}\n{}", a, s);
+}
+```
+
+And this console output:
+
+```
+$ cargo run --release
+    Finished `release` profile [optimized] target(s) in 0.01s
+     Running `target/release/repro`
+Segmentation fault (core dumped)
+```
+
+Since the backlash, the `serde_yml` folks cleaned up their git history and
+broke all my links ciritizing their way of doing git. They fixed the one
+thing I was criticizing them for. They rebased on the original serde_yaml
+history. However the [vibe coding](https://en.wikipedia.org/wiki/Vibe_coding)
+part doesn't inspire trust on my side, so I'm still maintaining this fork.
+
+Again, I'm not criticing the `serde_yml` folks, I'm just saying that I,
+personally, won't use their stuff because I, personally, don't trust them. You
+do whatever you want.
+
+This library has seen more and more users, and more and more issue reported as
+well as pull request. I'm still working on [migrating away from unsafe-libyaml
+to libyaml-safer](https://github.com/acatton/serde-yaml-ng/issues/5). This will
+make this library unrivaled AFAIK. This is a library for myself, don't expect
+professional support please.
+
+There is another fork of the original `serde_yaml` now, called
+[`serde_norway`](https://docs.rs/serde_norway/latest/serde_norway/). I haven't
+evaluated it, the broken links still referencing the original `serde_yaml`
+don't inspire trust. But the people behind it look much much much more
+trustworthy, to me, personally, than the
+AI-[cryptobros](https://en.wiktionary.org/wiki/cryptobro) behind `serde_yml`.
 
 ## Financial Support
 
