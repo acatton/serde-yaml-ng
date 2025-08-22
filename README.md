@@ -1,3 +1,35 @@
+
+<div align="right">
+  <details>
+    <summary >🌐 Language</summary>
+    <div>
+      <div align="center">
+        <a href="https://openaitx.github.io/view.html?user=acatton&project=serde-yaml-ng&lang=en">English</a>
+        | <a href="https://openaitx.github.io/view.html?user=acatton&project=serde-yaml-ng&lang=zh-CN">简体中文</a>
+        | <a href="https://openaitx.github.io/view.html?user=acatton&project=serde-yaml-ng&lang=zh-TW">繁體中文</a>
+        | <a href="https://openaitx.github.io/view.html?user=acatton&project=serde-yaml-ng&lang=ja">日本語</a>
+        | <a href="https://openaitx.github.io/view.html?user=acatton&project=serde-yaml-ng&lang=ko">한국어</a>
+        | <a href="https://openaitx.github.io/view.html?user=acatton&project=serde-yaml-ng&lang=hi">हिन्दी</a>
+        | <a href="https://openaitx.github.io/view.html?user=acatton&project=serde-yaml-ng&lang=th">ไทย</a>
+        | <a href="https://openaitx.github.io/view.html?user=acatton&project=serde-yaml-ng&lang=fr">Français</a>
+        | <a href="https://openaitx.github.io/view.html?user=acatton&project=serde-yaml-ng&lang=de">Deutsch</a>
+        | <a href="https://openaitx.github.io/view.html?user=acatton&project=serde-yaml-ng&lang=es">Español</a>
+        | <a href="https://openaitx.github.io/view.html?user=acatton&project=serde-yaml-ng&lang=it">Italiano</a>
+        | <a href="https://openaitx.github.io/view.html?user=acatton&project=serde-yaml-ng&lang=ru">Русский</a>
+        | <a href="https://openaitx.github.io/view.html?user=acatton&project=serde-yaml-ng&lang=pt">Português</a>
+        | <a href="https://openaitx.github.io/view.html?user=acatton&project=serde-yaml-ng&lang=nl">Nederlands</a>
+        | <a href="https://openaitx.github.io/view.html?user=acatton&project=serde-yaml-ng&lang=pl">Polski</a>
+        | <a href="https://openaitx.github.io/view.html?user=acatton&project=serde-yaml-ng&lang=ar">العربية</a>
+        | <a href="https://openaitx.github.io/view.html?user=acatton&project=serde-yaml-ng&lang=fa">فارسی</a>
+        | <a href="https://openaitx.github.io/view.html?user=acatton&project=serde-yaml-ng&lang=tr">Türkçe</a>
+        | <a href="https://openaitx.github.io/view.html?user=acatton&project=serde-yaml-ng&lang=vi">Tiếng Việt</a>
+        | <a href="https://openaitx.github.io/view.html?user=acatton&project=serde-yaml-ng&lang=id">Bahasa Indonesia</a>
+        | <a href="https://openaitx.github.io/view.html?user=acatton&project=serde-yaml-ng&lang=as">অসমীয়া</
+      </div>
+    </div>
+  </details>
+</div>
+
 Serde YAML
 ==========
 
