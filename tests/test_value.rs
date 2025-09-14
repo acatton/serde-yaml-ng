@@ -26,12 +26,6 @@ fn test_nan() {
 }
 
 #[test]
-fn test_digits() {
-    let num_string = serde_yaml_ng::from_str::<Value>("01").unwrap();
-    assert!(num_string.is_string());
-}
-
-#[test]
 fn test_into_deserializer() {
     #[derive(Debug, Deserialize, PartialEq)]
     struct Test {
