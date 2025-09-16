@@ -3,7 +3,8 @@ use crate::value::Value;
 use crate::Error;
 use serde::de::value::{BorrowedStrDeserializer, StrDeserializer};
 use serde::de::{
-    Deserialize, DeserializeSeed, Deserializer, EnumAccess, Error as _, VariantAccess, Visitor,
+    Deserialize, DeserializeSeed, Deserializer, EnumAccess, Error as _, MapAccess, VariantAccess,
+    Visitor,
 };
 use serde::forward_to_deserialize_any;
 use serde::ser::{Serialize, SerializeMap, Serializer};
@@ -257,6 +258,85 @@ impl<'de> EnumAccess<'de> for TaggedValue {
         let tag = StrDeserializer::<Error>::new(nobang(&self.tag.string));
         let value = seed.deserialize(tag)?;
         Ok((value, self.value))
+    }
+}
+
+/// Represents [`TaggedValue`] as a map accessor.  
+///  
+/// A YAML  
+/// ```yaml  
+/// !Thing x  
+/// ```  
+/// represented as a map with one entry `Thing -> x`.  
+///
+/// When use #[serde(flatten)] or similar newtype pattern,
+/// the `visit_enum` is not available by serde internal newtype visitor.
+/// So we need to implement a workaround that wrap the `TaggedValue` as a map accessor, which is this.
+pub struct TaggedValueAsMapAccess {
+    inner: Option<TaggedValue>,
+}
+
+impl From<TaggedValue> for TaggedValueAsMapAccess {
+    fn from(inner: TaggedValue) -> Self {
+        TaggedValueAsMapAccess { inner: Some(inner) }
+    }
+}
+
+impl<'de> MapAccess<'de> for TaggedValueAsMapAccess {
+    type Error = Error;
+
+    fn next_key_seed<K>(&mut self, seed: K) -> Result<Option<K::Value>, Error>
+    where
+        K: DeserializeSeed<'de>,
+    {
+        if let Some(tagged) = self.inner.as_ref() {
+            let tag = StrDeserializer::<Error>::new(nobang(&tagged.tag.string));
+            return seed.deserialize(tag).map(Some);
+        }
+        Ok(None)
+    }
+
+    fn next_value_seed<V>(&mut self, seed: V) -> Result<V::Value, Error>
+    where
+        V: DeserializeSeed<'de>,
+    {
+        let tagged = self.inner.take().expect("`next_key_seed` was not called");
+        seed.deserialize(tagged.value)
+    }
+}
+
+/// A variant of [`TaggedValueAsMapAccess`] that is a reference to [`TaggedValue`].
+/// Do the same as [`TaggedValueAsMapAccess`], but the inner value is a reference to [`TaggedValue`].
+pub struct TaggedValueRefAsMapAccess<'a> {
+    inner: Option<&'a TaggedValue>,
+}
+
+impl<'a> From<&'a TaggedValue> for TaggedValueRefAsMapAccess<'a> {
+    fn from(inner: &'a TaggedValue) -> Self {
+        TaggedValueRefAsMapAccess { inner: Some(inner) }
+    }
+}
+
+impl<'de> MapAccess<'de> for TaggedValueRefAsMapAccess<'de> {
+    type Error = Error;
+
+    fn next_key_seed<K>(&mut self, seed: K) -> Result<Option<K::Value>, Error>
+    where
+        K: DeserializeSeed<'de>,
+    {
+        if let Some(tagged) = self.inner.as_ref() {
+            let tag = StrDeserializer::<Error>::new(nobang(&tagged.tag.string));
+            return seed.deserialize(tag).map(Some);
+        }
+        Ok(None)
+    }
+
+    fn next_value_seed<V>(&mut self, seed: V) -> Result<V::Value, Error>
+    where
+        V: DeserializeSeed<'de>,
+    {
+        let tagged = self.inner.take().expect("`next_key_seed` was not called");
+        seed.deserialize(tagged.value.clone())
     }
 }
 
